@@ -162,6 +162,9 @@ class ModelMetaclass(type):
 
 
 class Model(dict, metaclass=ModelMetaclass):
+    """
+        ORM
+    """
     def __init__(self, **kw):
         super(Model, self).__init__(**kw)
 
