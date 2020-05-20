@@ -156,7 +156,8 @@ class ModelMetaclass(type):
         attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields),
                                                                            primaryKey,
                                                                            create_args_string(len(escaped_fields) + 1))
-        attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
+        attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (
+        tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
         attrs['__delete__'] = 'delete from `%s` where `%s` = ?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
@@ -165,6 +166,7 @@ class Model(dict, metaclass=ModelMetaclass):
     """
         ORM
     """
+
     def __init__(self, **kw):
         super(Model, self).__init__(**kw)
 
@@ -198,7 +200,7 @@ class Model(dict, metaclass=ModelMetaclass):
             sql.append('where')
             sql.append(where)
         if args is None:
-            args=[]
+            args = []
         orderBy = kw.get('orderBy', None)
         if orderBy:
             sql.append('order by')
@@ -230,7 +232,7 @@ class Model(dict, metaclass=ModelMetaclass):
         return rs[0]['_num']
 
     @classmethod
-    async  def find(cls, pk):
+    async def find(cls, pk):
         'find object by primary key'
         rs = await select('%s where `%s`=?' % (cls.__select__, cls.__promary_key__), [pk], 1)
         if len(rs) == 0:
