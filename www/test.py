@@ -6,14 +6,19 @@
 __author__ = 'Jack Zhang'
 
 import dbhandler
+import asyncio
 from webObject import User, Blog, Comment
 
 
-def test():
-    yield from dbhandler.create_pool(user='www-data', password='www-data', database='awesome')
+async def test(loop):
+    await dbhandler.create_pool(loop=loop, user='www-data', password='www-data', db='awesome')
     u = User(name='Test', email='test@example.com', passwd='1234567890', image='about:blank')
-    yield from u.save()
+    await u.save()
+
+    dbhandler.__pool.close()
+    await dbhandler.__pool.wait_closed()
 
 
-for x in test():
-    pass
+loop = asyncio.get_event_loop()
+loop.run_until_complete(test(loop))
+loop.close()
