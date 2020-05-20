@@ -24,9 +24,9 @@ async def create_pool(loop, **kwargs):
     __pool = await aiomysql.create_pool(
         host=kwargs.get('host', 'localhost'),
         port=kwargs.get('port', 3306),
-        user=kwargs['www-data'],
-        password=kwargs['www-data'],
-        db=kwargs['db'],
+        user=kwargs['user'],
+        password=kwargs['password'],
+        db=kwargs['database'],
         charset=kwargs.get('charset', 'utf-8'),
         autocommit=kwargs.get('autocommit', True),
         maxsize=kwargs.get('maxsize', 10),
