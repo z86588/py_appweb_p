@@ -11,7 +11,7 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from aiohttp import web
 
-from py_appweb_p.www import dbhandler
+import dbhandler
 from webframe import add_routes, add_static
 
 logging.basicConfig(level=logging.INFO)
@@ -29,6 +29,7 @@ def init_jinjia2(app, **kw):
     )
     path = kw.get('path', None)
     if path is None:
+        # 此处指定了模板路径，即__template__所在位置
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
     logging.info('set jinjia2 template path: %s' % path)
     env = Environment(loader=FileSystemLoader(path), **options)
