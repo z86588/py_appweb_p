@@ -11,6 +11,9 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from aiohttp import web
 
+from py_appweb_p.www import dbhandler
+from webframe import add_routes, add_static
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -111,16 +114,28 @@ def datetime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 
-def index(request):
-    return web.Response(body=b'<h1>Awesome</h1>', content_type='text/html')
+# def index(request):
+#     return web.Response(body=b'<h1>Awesome</h1>', content_type='text/html')
 
 
 async def init(loop):
-    app = web.Application()
-    app.router.add_route('GET', '/', index)
-    srv = await loop.create_server(app._make_handler(), '127.0.0.1', 9000)
+    await dbhandler.create_pool(loop=loop, host='127.0.0.1', user='www-data', password='www-data', db='awesome')
+    app = web.Application(loop=loop, middlewares={
+        logger_factory, response_factory
+    })
+    init_jinjia2(app, filters=dict(datetime=datetime_filter))
+    add_routes(app, 'handlers')
+    add_static(app)
+
+    # app.router.add_route('GET', '/', index)
+    # srv = await loop.create_server(app._make_handler(), '127.0.0.1', 9000)
+    # logging.info('Server started at http://127.0.0.1:9000...')
+    # return srv
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '127.0.0.1', 9000)
     logging.info('Server started at http://127.0.0.1:9000...')
-    return srv
+    await site.start()
 
 
 loop = asyncio.get_event_loop()
