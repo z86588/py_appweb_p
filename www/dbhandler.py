@@ -47,6 +47,7 @@ async def select(sql, args, size=None):
                 rs = await cur.fetchmany(size)
             else:
                 rs = await cur.fetchall()
+            await cur.close()
             logging.info('rows returned: %s' % len(rs))
             return rs
 
@@ -157,7 +158,7 @@ class ModelMetaclass(type):
                                                                            primaryKey,
                                                                            create_args_string(len(escaped_fields) + 1))
         attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (
-        tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
+            tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
         attrs['__delete__'] = 'delete from `%s` where `%s` = ?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
@@ -194,7 +195,7 @@ class Model(dict, metaclass=ModelMetaclass):
 
     @classmethod
     async def findAll(cls, where=None, args=None, **kw):
-        'find object by where clause'
+        """find object by where clause"""
         sql = [cls.__select__]
         if where:
             sql.append('where')
@@ -213,7 +214,7 @@ class Model(dict, metaclass=ModelMetaclass):
                 args.append(limit)
             elif isinstance(limit, tuple) and len(limit) == 2:
                 sql.append('?, ?')
-                args.append(limit)
+                args.extend(limit)
             else:
                 raise ValueError('Invalid limit value: %s' % str(limit))
         rs = await select(' '.join(sql), args)
@@ -229,12 +230,12 @@ class Model(dict, metaclass=ModelMetaclass):
         rs = await select(' '.join(sql), args, 1)
         if len(rs) == 0:
             return None
-        return rs[0]['_num']
+        return rs[0]['_num_']
 
     @classmethod
     async def find(cls, pk):
         'find object by primary key'
-        rs = await select('%s where `%s`=?' % (cls.__select__, cls.__promary_key__), [pk], 1)
+        rs = await select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__), [pk], 1)
         if len(rs) == 0:
             return None
         return cls(**rs[0])
