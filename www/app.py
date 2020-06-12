@@ -5,11 +5,14 @@
 
 __author__ = 'Jack Zhang'
 
+import sys, os
+sys.path.append('D:\\pysci\\Lib\\site-packages')
+
 import logging
-import asyncio, os, json, time
+import asyncio, json, time
 from datetime import datetime
-from jinja2 import Environment, FileSystemLoader
 from aiohttp import web
+from jinja2 import Environment, FileSystemLoader
 
 import dbhandler
 from webframe import add_routes, add_static
@@ -32,7 +35,7 @@ def init_jinjia2(app, **kw):
     if path is None:
         # 此处指定了模板路径，即__template__所在位置
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-    logging.info('set jinjia2 template path: %s' % path)
+    logging.info('Set jinjia2 template path: %s' % path)
     env = Environment(loader=FileSystemLoader(path), **options)
     filters = kw.get('filters', None)
     if filters is not None:
@@ -153,7 +156,7 @@ async def init(loop):
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, '127.0.0.1', 9000)
-    logging.info('Server started at http://127.0.0.1:9000...')
+    logging.info('Server started at http://127.0.0.1:9000......')
     await site.start()
 
 

@@ -6,12 +6,12 @@
 __author__ = 'Jack Zhang'
 
 import os, sys, time, subprocess
+
+sys.path.append('D:\\pysci\\Lib\\site-packages')
+# print(sys.path)
+
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-
-curPath = os.path.abspath(os.path.dirname(__file__))
-rootPath = os.path.split(curPath)[0]
-sys.path.append(rootPath)
 
 
 def log(s):
@@ -48,6 +48,7 @@ def start_process():
     global process, command
     log('Start process %s...' % ' '.join(command))
     process = subprocess.Popen(command, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    log('Subprocess started...')
 
 
 def restart_process():
@@ -70,9 +71,10 @@ def start_watch(path, callback):
 
 
 if __name__ == '__main__':
+    # print('>>>sys.argv:', sys.argv)
     argv = sys.argv[1:]
     if not argv:
-        print('Usage: ./pymonitor your-script.py')
+        print('Usage: ./pymonitor app.py')
         exit(0)
     if argv[0] != 'python':
         argv.insert(0, 'python')
