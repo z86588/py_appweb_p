@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def init_jinjia2(app, **kw):
-    logging.info('init jinjia2...')
+    logging.info('init jinjia2... ')
     options = dict(
         autoescape=kw.get('autoescape', True),
         block_start_string=kw.get('block_start_string', '{%'),

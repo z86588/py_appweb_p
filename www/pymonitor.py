@@ -8,7 +8,7 @@ __author__ = 'Jack Zhang'
 import os, sys, time, subprocess
 
 sys.path.append('D:\\pysci\\Lib\\site-packages')
-# print(sys.path)
+# print('>>>>>pymonitor.py->sys.path', sys.path)
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -24,7 +24,7 @@ class MyFileSystemEventHander(FileSystemEventHandler):
         super(MyFileSystemEventHander, self).__init__()
         self.restart = fn
 
-    def on_my_event(self, event):
+    def on_any_event(self, event):
         if event.src_path.endswith('.py'):
             log('Python source file changed: %s' % event.src_path)
             self.restart()
